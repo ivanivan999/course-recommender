@@ -1,19 +1,19 @@
-FROM python:3.9-slim
+FROM python:3.12-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the requirements file
+# Copy requirements first for better caching
 COPY requirements.txt .
-
-# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
-COPY ./src ./src
+# Copy the rest of the application
+COPY . .
 
-# Expose the port the app runs on
+# Ensure the data directory exists
+RUN mkdir -p data
+
+# Expose the port
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
