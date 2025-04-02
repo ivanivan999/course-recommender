@@ -3,10 +3,10 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install uv
-RUN pip install uv
+RUN pip install -U uv
 
 # Install requirements in two steps to avoid syntax issues
-RUN uv pip install --no-cache-dir torch==2.0.0+cpu --index-url https://download.pytorch.org/whl/cpu
+RUN uv pip install --no-cache-dir torch==2.2.2+cpu --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
 RUN grep -v "torch" requirements.txt > requirements_no_torch.txt
