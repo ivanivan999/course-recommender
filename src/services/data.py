@@ -14,20 +14,20 @@ if 'Language' in df.columns:
     df = df[df['Language'] == 'English']
 df = df.dropna(subset=['Title', 'Rating'])
 
-# Clean 'Rating' column to numeric
-df['Rating'] = pd.to_numeric(df['Rating'], errors='coerce')
+# Clean rating field
+if 'Rating' in df.columns:
+    df['Rating'] = df['Rating'].astype(str).str.extract(r'(\d+\.\d+)').astype(float)
 
-# Clean 'Number of viewers'
-def parse_viewers(val):
-    if isinstance(val, str):
-        val = val.replace('k', '').replace('K', '').strip()
-        try:
-            return float(val) * 1000
-        except:
-            return np.nan
-    return val
+# Clean viewers field
+if 'Number of viewers' in df.columns:
+    df['Number of viewers'] = df['Number of viewers'].astype(str).str.replace(',', '').str.strip()
+    df['Number of viewers'] = pd.to_numeric(df['Number of viewers'], errors='coerce')
 
-df['Number of viewers'] = df['Number of viewers'].apply(parse_viewers)
+# Drop exact duplicate courses based on Title and Instructor (if available)
+if 'Instructor' in df.columns:
+    df = df.drop_duplicates(subset=['Title', 'Instructor'])
+else:
+    df = df.drop_duplicates(subset=['Title'])
 
 # Fill NA for text features
 df['Short Intro'] = df['Short Intro'].fillna('')
